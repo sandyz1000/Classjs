@@ -34,6 +34,10 @@
         History.pushState(state.state, state.title, myPath);
       };
 
+      this.back = function () {
+        History.back();
+      };
+      
       this.navigate = function (state, data) {
         var hash = state.hash.substring(state.hash.indexOf("?") + 1, state.hash.length - 1);
         var query = hash.split("&");

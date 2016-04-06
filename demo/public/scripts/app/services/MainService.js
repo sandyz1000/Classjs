@@ -21,11 +21,11 @@
       },
 
       onClickNew : function (e) {
-        App.instances.router.routes("new"); 
+        App.instances.router.routes("add"); 
       },
 
       onBack : function (e) {
-      
+        App.instances.router.back(); 
       }
   });
   
@@ -34,38 +34,37 @@
       tagname : 'div',
       className : 'row',
       dataset : [],
+      gridTpl : null,
       init : function (dataset) {
         var self = this;
         this.dataset = dataset;
 
-        self.renderGrid();
+        App.instances.httpService.LoadTemplate('/public/scripts/templates/grid.html', 
+          function (result) {
+            self.gridTpl = result; 
+            App.lib.event.emit("gridTemplateLoaded");
+        });
+        
         App.lib.event.on("deleteGridElement", function (id) {
           self.destroy(id);
+        });
+
+        App.lib.event.on("gridTemplateLoaded", function () {
+          self.renderGrid();
         });
       },
       
       renderGrid : function () {
         var self = this;
         var counter = 0;
-        this.dataset.forEach(function (value, index) {
-          var gridView = new App.services.GridService();
-          setTimeout(function () {
-            self.appendGrid(gridView, value);
-            counter ++;
-          }, 200);
-        }); 
-          
-        //Broadcast on template loaded completely
-        var interval = setInterval(function () {
-          if(counter == self.dataset.length) {
-            clearInterval(interval);
+        for(var i =0; i< this.dataset.length; i++) {
+          var gridView = new App.services.GridService(self.gridTpl);
+          var node = gridView.render(this.dataset[i]).Element;
+          this.Element.appendChild(node);
+          if(i == this.dataset.length -1 ) {
             App.lib.event.emit("mainTemplateLoaded");
           }
-        }, 200);
-      },
-      
-      appendGrid : function (gridView, value) {
-        $(this.Element).append(gridView.render(value).Element);
+        }
       },
       
       render : function () {
@@ -73,14 +72,16 @@
       },
 
       destroy : function (id) {
+        var isDestroyed = false;
         for(var index in this.dataset) {
           if(this.dataset[index].id == id) {
             this.dataset.splice(index, 1);
+            isDestroyed = true;
             break;
           }
         }
 
-        this.renderGrid();
+        if(isDestroyed) this.renderGrid();
       },
   });
 
@@ -88,16 +89,12 @@
   App.services.GridService = Class({
       events : {"#edit|^|click" : "onClickEdit", "#delete|^|click" : "onClickDelete" },
       tagname : 'div',
-      className : 'row',
+      className : 'col-md-12',
       attributes : {"style" : "border:1px solid #CCC;"},
       tpl : null,
       dataset : null,
-      init : function () {
-        var self = this;
-        App.instances.httpService.LoadTemplate('/public/scripts/templates/grid.html', 
-          function (result) {
-            self.tpl = result; 
-        });
+      init : function (tpl) {
+        this.tpl = tpl;
       },
 
       render : function (dataset) { 
@@ -109,13 +106,13 @@
       },
 
       onClickEdit : function (evt) {
-        var self = this.context;
-        App.instances.router.routes("edit", {id : self.dataset.id });
+        var id = evt.currentTarget.getAttribute("data-pk");
+        App.instances.router.routes("edit", {id : id });
       },
 
       onClickDelete : function (evt) {
-        var self = this.context;
-        App.lib.event.emit("deleteGridElement", self.dataset.id);
+        var id = evt.currentTarget.getAttribute("data-pk");
+        App.lib.event.emit("deleteGridElement", id);
       }
   });
   

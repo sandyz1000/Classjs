@@ -1,6 +1,7 @@
 (function (App) {
 
     App.services.HttpService = Class({
+      tplMap : {},
       GetQuerystr : function (name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -8,8 +9,21 @@
         return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " ")); 
       },
       LoadTemplate : function (url, onSuccess, onError) {
+        var self = this;
+        if(self.tplMap[url]) {
+          setTimeout(function () {
+            onSuccess(self.tplMap[url]);
+          }, 200);
+          return 1;
+        }
+
+        var onResponse = function (result) {
+          if(!self.tplMap[url]) self.tplMap[url] = result;
+          onSuccess(result);
+        };
+        
         $.ajax({
-            url: url, type: 'GET', success : onSuccess, error : onError
+            url: url, type: 'GET', success : onResponse, error : onError
         });
       },
       
