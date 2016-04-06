@@ -1,0 +1,29 @@
+  <div class="col-md-4">
+    <div class="gl-img-container img-responsive img-rounded">
+      <img src="/public/images/profile.png" />
+    </div>
+  </div>
+  <div class="col-md-5 col-lg-5 col-sm-5">
+    <div class="">
+      <p class="list-group-item-text">
+        <label class="label label-primary margin-3">Title: </label>
+        <span>
+          {{ title }}
+        </span>
+      </p>
+      <p class="list-group-item-text">
+        {{ note }}
+      </p>
+    </div>
+  </div>
+  <div class="col-sm-3 col-lg-3 col-md-3">
+    <div class="btn-group btn-group-sm" role="group">
+      <button class="btn btn-info margin-top-20" type="button" id="edit" data-pk="{{ id }}">
+        <i class="glyphicon glyphicon-edit"></i> Edit
+      </button>
+
+      <button class="btn btn-danger margin-top-20" type="button" id="delete" data-pk ="{{ id }}">
+        <i class="glyphicon glyphicon-remove" style="font-size: 9px;"></i> Delete
+      </button>
+    </div>
+  </div>
