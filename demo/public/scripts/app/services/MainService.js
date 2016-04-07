@@ -106,13 +106,13 @@
       },
 
       onClickEdit : function (evt) {
-        var id = evt.currentTarget.getAttribute("data-pk");
-        App.instances.router.routes("edit", {id : id });
+        var context = this.context;
+        App.instances.router.routes("edit", {id : context.dataset.id });
       },
 
       onClickDelete : function (evt) {
-        var id = evt.currentTarget.getAttribute("data-pk");
-        App.lib.event.emit("deleteGridElement", id);
+        var context = this.context;
+        App.lib.event.emit("deleteGridElement", context.dataset.id);
       }
   });
   

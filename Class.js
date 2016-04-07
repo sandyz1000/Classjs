@@ -40,11 +40,9 @@
     // and it contain Mutation observer whose job is observe any dom change and 
     // bind the callback to an event
     window.Class = function (Object) {
-      var self = null;
-      
       //Return jsClass method
       var jsClass = function() {
-        self = this;
+        var self = this;
 
         var _el = new MyElement();
         var ce = function (name) {
